@@ -54,14 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     passwordField.setHint("Пароль");
             }
         });
-
-        // Добавление админа
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(DBHelper.KEY_NAME, adminUser);
-        contentValues.put(DBHelper.KEY_PASSWORD, adminPassword);
-
-        database.insert(DBHelper.TABLE_USERS, null, contentValues);
+        admin();
     }
     @Override
     public void onClick(View view){
@@ -113,5 +106,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 signCursor.close();
                 break;
         }
+    }
+    public void admin(){
+        Cursor signCursor = database.query(DBHelper.TABLE_USERS, null, null, null, null, null, null);
+
+        int proverkaAdmin = 0;
+        if(signCursor.moveToFirst()){
+            int usernameIndex = signCursor.getColumnIndex(DBHelper.KEY_NAME);
+            do{
+                if(adminUser.equals(signCursor.getString(usernameIndex))){
+                    proverkaAdmin ++;
+                    break;
+                }
+            }while (signCursor.moveToNext());
+        }
+        if(proverkaAdmin==0){
+            ContentValues contentValues = new ContentValues();
+
+            contentValues.put(DBHelper.KEY_NAME, adminUser);
+            contentValues.put(DBHelper.KEY_PASSWORD, adminPassword);
+
+            database.insert(DBHelper.TABLE_USERS, null, contentValues);
+        }
+        signCursor.close();
     }
 }
